@@ -35,6 +35,8 @@ jobs:
 
       - name: Build Kernel
         run: |
+          git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernel -b zx
+          cd kernel
           bash snx/build.sh --KSU --RDP
 
       - name: Display final ccache stats
