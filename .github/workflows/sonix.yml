@@ -1,7 +1,7 @@
 name: GitHubCI
 on:
    push:
-     branches: [ "WF-K9" ]
+     branches: [ "K9-WF" ]
 jobs:
   build:
     runs-on: ubuntu-latest
