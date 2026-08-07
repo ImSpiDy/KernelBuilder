@@ -29,11 +29,18 @@ jobs:
       - name: Display initial ccache stats
         run: ccache --show-stats
 
-      - name: Build RDP Kernel
+      - name: Build Kernel
         run: |
           git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernel
           cd kernel
           bash build.sh
+
+      - name: Build X Kernel
+        run: |
+          git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernelX
+          cd kernelX
+          git fetch --depth=5 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 X-Series
+          bash build.sh --X
 
       - name: Display final ccache stats
         run: |
