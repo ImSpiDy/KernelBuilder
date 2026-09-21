@@ -31,7 +31,8 @@ jobs:
 
       - name: Build Kernel
         run: |
-          git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernel
+          BRANCH="$(git show -s --format=%s | awk 'NF>1{print $NF}')"
+          git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernel -b $BRANCH
           cd kernel
           bash build.sh
 
