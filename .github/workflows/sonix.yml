@@ -1,50 +1,24 @@
-name: GitHubCI
+name: REL-WF
+
 on:
    push:
-     branches: [ "K9-WF" ]
+     branches: [ "build_rel" ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     container: nexgang/ubuntu:latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up ccache
+      - name: Build release
+        env:
+          gh_token: ${{ secrets.GH_TOKEN }}
+          VEX_KEYS: ${{ secrets.VEX_TOKEN }}
         run: |
-          echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> $GITHUB_ENV
-          echo "PATH=/usr/lib/ccache/bin:$PATH" >> $GITHUB_ENV
-          mkdir -p ${{ github.workspace }}/.ccache
-          ccache --max-size=5G
+          git clone --depth=1 https://github.com/ImSpiDy/Scripts reup -b ru
+          cd reup
+          bash lav*.sh
 
-      - name: Restore ccache from cache
-        id: cache-ccache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ccache-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            ccache-${{ runner.os }}-${{ github.ref_name }}
-            ccache-${{ runner.os }}-
-
-      - name: Display initial ccache stats
-        run: ccache --show-stats
-
-      - name: Build Kernel
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          BRANCH="$(git show -s --format=%s | awk 'NF>1{print $NF}')"
-          git clone --depth=1 https://ImSpiDy:${{ secrets.GH_TOKEN }}@github.com/ImSpiDy/kernel_xiaomi_lavender-4.19 kernel -b $BRANCH
-          cd kernel
-          bash build.sh
-
-      - name: Display final ccache stats
-        run: |
-          echo "======= FINAL CCACHE STATS ======="
-          ccache --show-stats
-
-      - name: Save ccache to cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ccache-${{ runner.os }}-${{ github.sha }}
